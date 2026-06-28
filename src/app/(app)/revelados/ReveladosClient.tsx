@@ -32,7 +32,15 @@ function faseLabel(fase: string): string {
 }
 
 export function ReveladosClient({ jogos, palpites }: Props) {
-  const [sel, setSel] = useState(jogos[0]?.id)
+  // Prioriza jogos com palpites; dentro de cada grupo, mais recente primeiro
+  const jogosOrdenados = [...jogos].sort((a, b) => {
+    const temA = palpites.some(p => p.jogo_id === a.id) ? 1 : 0
+    const temB = palpites.some(p => p.jogo_id === b.id) ? 1 : 0
+    if (temB !== temA) return temB - temA
+    return new Date(b.kickoff_at).getTime() - new Date(a.kickoff_at).getTime()
+  })
+
+  const [sel, setSel] = useState(jogosOrdenados[0]?.id)
   const jogo = jogos.find((j) => j.id === sel)!
 
   const palpitesJogo = palpites
@@ -54,7 +62,7 @@ export function ReveladosClient({ jogos, palpites }: Props) {
 
       {/* Pills seletoras */}
       <div className="flex gap-2 overflow-x-auto pb-1 mb-4 scrollbar-hide">
-        {jogos.map((j) => (
+        {jogosOrdenados.map((j) => (
           <button
             key={j.id}
             onClick={() => setSel(j.id)}

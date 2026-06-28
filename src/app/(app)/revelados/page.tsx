@@ -19,12 +19,12 @@ export default async function ReveladosPage() {
     .select('*')
     .order('kickoff_at', { ascending: false })
 
-  if (prazoPassou) {
-    // Jogos encerrados em qualquer data + jogos de hoje após o prazo
-    query = query.or(`status.eq.encerrado,kickoff_at.gte.${hoje}T00:00:00-03:00`)
-  } else {
-    // Antes do prazo: só jogos já encerrados de dias anteriores
-    query = query.eq('status', 'encerrado').lt('kickoff_at', `${hoje}T00:00:00-03:00`)
+  // Só mata-mata, só até hoje (inclusive), só após o prazo de hoje se for jogo de hoje
+  query = query.neq('fase', 'grupos').lte('kickoff_at', `${hoje}T23:59:59-03:00`)
+
+  if (!prazoPassou) {
+    // Antes das 12h: não mostra jogos de hoje ainda
+    query = query.lt('kickoff_at', `${hoje}T00:00:00-03:00`)
   }
 
   const { data: jogos } = await query
