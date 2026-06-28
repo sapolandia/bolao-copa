@@ -18,7 +18,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const isAdmin = participante?.is_admin === true
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       <header className="hidden md:flex items-center justify-between px-8 py-5 border-b border-[var(--line)]">
         <Link href="/palpites" className="flex items-center gap-2 font-black text-lg">
           <Trophy size={20} className="text-[var(--score)]" />

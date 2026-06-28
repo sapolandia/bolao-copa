@@ -1,6 +1,6 @@
 'use client'
 
-import { ListChecks, Eye, Trophy, Settings, GitBranch } from 'lucide-react'
+import { ListChecks, Eye, Trophy, Settings, GitBranch, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -9,6 +9,7 @@ const TABS = [
   { href: '/revelados',    label: 'Revelados',    icon: Eye         },
   { href: '/chaveamento',  label: 'Chaveamento',  icon: GitBranch   },
   { href: '/ranking',      label: 'Ranking',      icon: Trophy      },
+  { href: '/perfil',       label: 'Perfil',       icon: UserCircle  },
 ]
 
 export function TabBar({ isAdmin = false }: { isAdmin?: boolean }) {
