@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Eye, Share2, Check } from 'lucide-react'
 import { calcularPontos } from '@/lib/pontuacao'
+import { bandeira } from '@/lib/bandeiras'
 import type { Jogo, Palpite } from '@/types'
 
 interface PalpiteComNome extends Palpite {
@@ -13,6 +14,7 @@ interface PalpiteComNome extends Palpite {
 interface Props {
   jogos: Jogo[]
   palpites: PalpiteComNome[]
+  campeoMap: Record<string, string>
 }
 
 function initials(nome: string) {
@@ -42,7 +44,7 @@ async function compartilhar(texto: string) {
   }
 }
 
-export function ReveladosClient({ jogos, palpites }: Props) {
+export function ReveladosClient({ jogos, palpites, campeoMap }: Props) {
   const jogosOrdenados = [...jogos].sort((a, b) => {
     const temA = palpites.some(p => p.jogo_id === a.id) ? 1 : 0
     const temB = palpites.some(p => p.jogo_id === b.id) ? 1 : 0
@@ -66,7 +68,7 @@ export function ReveladosClient({ jogos, palpites }: Props) {
   function gerarTexto() {
     const data = new Date(jogo.kickoff_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'America/Sao_Paulo' })
     const linhas = palpitesJogo.map((p) => {
-      const nome = (p.participantes?.nome ?? '?').split(' ')[0]
+      const nome = p.participantes?.nome ?? '?'
       return `${medalha(p.pontos)} ${nome}: ${p.placar_mandante}-${p.placar_visitante} · ${p.pontos > 0 ? '+' : ''}${p.pontos}pt${p.pontos !== 1 ? 's' : ''}`
     })
     return [
@@ -157,7 +159,14 @@ export function ReveladosClient({ jogos, palpites }: Props) {
                   style={{ background: 'var(--surface2)', color: 'var(--muted)' }}>
                   {initials(nome)}
                 </span>
-                <span className="flex-1 text-[14px] font-bold min-w-0 truncate">{nome}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[14px] font-bold truncate">{nome}</div>
+                  {campeoMap[p.participante_id] && (
+                    <div className="text-[11px] font-semibold truncate" style={{ color: 'var(--score)' }}>
+                      {bandeira(campeoMap[p.participante_id])} {campeoMap[p.participante_id]}
+                    </div>
+                  )}
+                </div>
                 <span className="font-mono-custom text-[13px]" style={{ color: 'var(--muted)', flexShrink: 0 }}>
                   {p.placar_mandante}-{p.placar_visitante}
                 </span>

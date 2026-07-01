@@ -25,6 +25,8 @@ html, body {
   color: var(--chalk);
   font-family: 'Archivo', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {

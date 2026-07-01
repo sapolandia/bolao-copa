@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Trophy, ListChecks, Share2, Check } from 'lucide-react'
+import { bandeira } from '@/lib/bandeiras'
 
 interface EntradaRanking {
   participante_id: string
@@ -15,6 +16,7 @@ interface EntradaRanking {
 interface Props {
   ranking: EntradaRanking[]
   myId: string
+  campeoMap: Record<string, { time: string; eliminado: boolean }>
 }
 
 function initials(nome: string) {
@@ -31,7 +33,7 @@ async function compartilhar(texto: string, setCopied: (v: boolean) => void) {
   setTimeout(() => setCopied(false), 2000)
 }
 
-export function RankingView({ ranking, myId }: Props) {
+export function RankingView({ ranking, myId, campeoMap }: Props) {
   const [copiado, setCopiado] = useState(false)
   const top3 = ranking.slice(0, 3)
   const resto = ranking.slice(3)
@@ -40,7 +42,7 @@ export function RankingView({ ranking, myId }: Props) {
     const emojis = ['🥇', '🥈', '🥉']
     const linhas = ranking.map((r) => {
       const emoji = emojis[r.posicao - 1] ?? `${r.posicao}º`
-      return `${emoji} ${r.nome.split(' ')[0]} · ${r.pontos}pts`
+      return `${emoji} ${r.nome} · ${r.pontos}pts`
     })
     return ['🏆 *Bolão Copa 2026 — Ranking*', '', ...linhas, '', '⚽ Quem vai ganhar?'].join('\n')
   }
@@ -107,7 +109,16 @@ export function RankingView({ ranking, myId }: Props) {
                     style={{ background: 'var(--surface2)', color: 'var(--muted)' }}>
                     {initials(r.nome)}
                   </span>
-                  <span className="flex-1 text-[14.5px] font-bold min-w-0 truncate">{r.nome}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14.5px] font-bold truncate">{r.nome}</div>
+                    {campeoMap[r.participante_id] && (
+                      <div className="text-[11px] font-semibold truncate"
+                        style={{ color: campeoMap[r.participante_id].eliminado ? 'var(--live)' : 'var(--score)' }}>
+                        {bandeira(campeoMap[r.participante_id].time)} {campeoMap[r.participante_id].time}
+                        {campeoMap[r.participante_id].eliminado && ' · eliminado'}
+                      </div>
+                    )}
+                  </div>
                   <span className="font-mono-custom text-[10.5px] text-right leading-snug flex-shrink-0" style={{ color: 'var(--muted)' }}>
                     {r.placares_exatos} exatos<br />{r.acertos_resultado} result.
                   </span>
@@ -134,13 +145,14 @@ export function RankingView({ ranking, myId }: Props) {
             {copiado ? 'Copiado!' : 'Compartilhar ranking'}
           </button>
 
-          <div className="flex gap-2 items-start text-[11.5px] leading-relaxed rounded-xl p-3"
+          <div className="flex gap-2 items-start text-[11.5px] leading-relaxed rounded-xl p-3 mb-5"
             style={{ background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--muted)' }}>
             <ListChecks size={15} className="flex-none mt-0.5" style={{ color: 'var(--mint)' }} />
             <span>Empate? Desempata por mais placares exatos, depois mais acertos de resultado. Persistindo, o prêmio é dividido.</span>
           </div>
         </>
       )}
+
     </div>
   )
 }

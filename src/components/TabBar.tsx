@@ -25,6 +25,7 @@ export function TabBar({ isAdmin = false }: { isAdmin?: boolean }) {
         return (
           <Link key={href} href={href}
             className={`flex-1 flex flex-col items-center gap-1 py-3 pb-4 text-[10.5px] font-bold transition-colors ${active ? 'text-[var(--score)]' : 'text-[var(--muted)]'}`}
+            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
           >
             <Icon size={20} />
             {label}

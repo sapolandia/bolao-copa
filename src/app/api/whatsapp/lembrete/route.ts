@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { isAuthorizedRequest } from '@/lib/auth-api'
-import { sendWhatsApp } from '@/lib/whatsapp'
+import { sendWhatsAppGroup } from '@/lib/whatsapp'
 
 // Disparado às 11:30 BRT (14:30 UTC) pelo Vercel Cron.
 // Envia lembrete para participantes que ainda não enviaram palpites do dia.
@@ -53,27 +53,25 @@ export async function POST(req: Request) {
 
   const pendentes = participantes.filter((p) => !enviouTodos.has(p.id) && p.telefone)
 
-  const listaJogos = jogos.map((j) => `• ${j.mandante} x ${j.visitante}`).join('\n')
-  const resultados: { nome: string; status: string }[] = []
+  const GROUP_ID = '120363427075459931'
 
-  for (const par of pendentes) {
-    const msg =
-      `⚽ *Bolão Copa 2026* — lembrete!\n\n` +
-      `Oi ${par.nome.split(' ')[0]}! Você ainda não enviou seu palpite de hoje.\n\n` +
-      `*Jogos de hoje:*\n${listaJogos}\n\n` +
-      `⏰ Palpites encerram às *12h00*. Você tem 30 minutos!\n\n` +
-      `Acesse: ${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/palpites`
+  const listaJogos   = jogos.map((j) => `• ${j.mandante} x ${j.visitante}`).join('\n')
+  const listaPendentes = pendentes.map((p) => `• ${p.nome}`).join('\n')
 
-    try {
-      await sendWhatsApp(par.telefone!, msg)
-      resultados.push({ nome: par.nome, status: 'enviado' })
-    } catch (e: unknown) {
-      resultados.push({ nome: par.nome, status: 'erro: ' + (e instanceof Error ? e.message : String(e)) })
-    }
+  const msg =
+    `⚽ *Bolão Copa 2026* — lembrete!\n\n` +
+    `*Jogos de hoje:*\n${listaJogos}\n\n` +
+    `⏰ Palpites encerram às *12h00*.\n\n` +
+    (pendentes.length > 0
+      ? `*Ainda não palpitaram:*\n${listaPendentes}\n\n`
+      : `✅ Todo mundo já palpitou!\n\n`) +
+    `Acesse: ${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/palpites`
 
-    // Pequeno delay para não exceder rate limit da green-api
-    await new Promise((r) => setTimeout(r, 500))
+  try {
+    await sendWhatsAppGroup(GROUP_ID, msg)
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : String(e) }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true, pendentes: pendentes.length, resultados })
+  return NextResponse.json({ ok: true, pendentes: pendentes.length, nomes: pendentes.map(p => p.nome) })
 }

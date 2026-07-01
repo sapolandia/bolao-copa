@@ -48,10 +48,18 @@ export default async function ReveladosPage() {
     )
   }
 
-  const { data: palpites } = await supabase
-    .from('palpites')
-    .select('*, participantes(nome)')
-    .in('jogo_id', jogos.map((j) => j.id))
+  const [{ data: palpites }, { data: campeoes }] = await Promise.all([
+    supabase
+      .from('palpites')
+      .select('*, participantes(nome)')
+      .in('jogo_id', jogos.map((j) => j.id)),
+    supabase
+      .from('palpite_campeao')
+      .select('participante_id, time_campeao'),
+  ])
 
-  return <ReveladosClient jogos={jogos} palpites={palpites ?? []} />
+  const campeoMap: Record<string, string> = {}
+  for (const c of campeoes ?? []) campeoMap[c.participante_id] = c.time_campeao
+
+  return <ReveladosClient jogos={jogos} palpites={palpites ?? []} campeoMap={campeoMap} />
 }

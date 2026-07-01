@@ -10,13 +10,13 @@ import type { Jogo, Palpite } from '@/types'
 
 function TeamCol({ nome, logo }: { nome: string; logo: string | null }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, minWidth: 0 }}>
       {logo ? (
-        <Image src={logo} alt={nome} width={40} height={40} style={{ objectFit: 'contain' }} />
+        <Image src={logo} alt={nome} width={40} height={40} style={{ objectFit: 'contain', flexShrink: 0 }} />
       ) : (
-        <div style={{ width: 40, height: 40 }} />
+        <div style={{ width: 40, height: 40, flexShrink: 0 }} />
       )}
-      <span style={{ fontSize: 12, fontWeight: 800, textAlign: 'center', lineHeight: 1.3, maxWidth: 80 }}>{nome}</span>
+      <span style={{ fontSize: 12, fontWeight: 800, textAlign: 'center', lineHeight: 1.3, maxWidth: '100%', wordBreak: 'break-word' }}>{nome}</span>
     </div>
   )
 }
