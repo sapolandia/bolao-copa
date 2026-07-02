@@ -19,8 +19,9 @@ export default async function ReveladosPage() {
     .select('*')
     .order('kickoff_at', { ascending: false })
 
-  // Só mata-mata, só até hoje (inclusive), só após o prazo de hoje se for jogo de hoje
-  query = query.neq('fase', 'grupos').lte('kickoff_at', `${hoje}T23:59:59-03:00`)
+  // Só mata-mata. Janela "hoje" vai até 03:00 BRT do dia seguinte (cobre jogos da meia-noite).
+  const amanha = new Date(agora.getTime() + 86400000).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+  query = query.neq('fase', 'grupos').lt('kickoff_at', `${amanha}T03:00:00-03:00`)
 
   if (!prazoPassou) {
     // Antes das 12h: não mostra jogos de hoje ainda
