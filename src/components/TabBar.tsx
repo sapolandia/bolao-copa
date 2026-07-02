@@ -2,7 +2,7 @@
 
 import { ListChecks, Eye, Trophy, Settings, GitBranch, UserCircle } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 const TABS = [
   { href: '/palpites',     label: 'Palpites',     icon: ListChecks  },
@@ -13,8 +13,9 @@ const TABS = [
 ]
 
 export function TabBar({ isAdmin = false }: { isAdmin?: boolean }) {
-  const path = usePathname()
-  const tabs = isAdmin ? [...TABS, { href: '/admin', label: 'Admin', icon: Settings }] : TABS
+  const path   = usePathname()
+  const router = useRouter()
+  const tabs   = isAdmin ? [...TABS, { href: '/admin', label: 'Admin', icon: Settings }] : TABS
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 flex border-t border-[var(--line)] z-50 md:hidden"
@@ -23,13 +24,16 @@ export function TabBar({ isAdmin = false }: { isAdmin?: boolean }) {
       {tabs.map(({ href, label, icon: Icon }) => {
         const active = path.startsWith(href)
         return (
-          <Link key={href} href={href}
+          <button
+            key={href}
+            onTouchStart={() => router.push(href)}
+            onClick={() => router.push(href)}
             className={`flex-1 flex flex-col items-center gap-1 py-3 pb-4 text-[10.5px] font-bold transition-colors ${active ? 'text-[var(--score)]' : 'text-[var(--muted)]'}`}
-            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' } as React.CSSProperties}
           >
             <Icon size={20} />
             {label}
-          </Link>
+          </button>
         )
       })}
     </nav>
