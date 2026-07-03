@@ -13,7 +13,7 @@ export default async function PalpitesPage() {
   const { data: jogos } = await supabase
     .from('jogos')
     .select('*')
-    .gte('kickoff_at', `${hoje}T00:00:00-03:00`)
+    .gte('kickoff_at', `${hoje}T03:00:00-03:00`)
     .lt('kickoff_at', `${amanha}T03:00:00-03:00`)
     .neq('fase', 'grupos')
     .order('kickoff_at')

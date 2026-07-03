@@ -24,8 +24,8 @@ export default async function ReveladosPage() {
   query = query.neq('fase', 'grupos').lt('kickoff_at', `${amanha}T03:00:00-03:00`)
 
   if (!prazoPassou) {
-    // Antes das 12h: não mostra jogos de hoje ainda
-    query = query.lt('kickoff_at', `${hoje}T00:00:00-03:00`)
+    // Antes das 12h: não mostra jogos da sessão de hoje (que começa às 03:00 BRT)
+    query = query.lt('kickoff_at', `${hoje}T03:00:00-03:00`)
   }
 
   const { data: jogos } = await query
