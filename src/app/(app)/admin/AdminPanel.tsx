@@ -169,7 +169,7 @@ export function AdminPanel({ jogos, participantes: inicial }: Props) {
         <div className="flex flex-col gap-3">
           {jogos.length === 0 ? (
             <div className="rounded-2xl p-6 text-center text-[var(--muted)] text-sm" style={{ background: 'var(--surface)', border: '1px solid var(--line)' }}>
-              Nenhum jogo. Rode "Sincronizar todos os jogos" na aba API.
+              Nenhum jogo. Rode "Sincronizar jogos de hoje" na aba API.
             </div>
           ) : jogos.map((j) => {
             const isEdit = editando === j.id
@@ -228,7 +228,7 @@ export function AdminPanel({ jogos, participantes: inicial }: Props) {
       {tab === 'api' && (
         <div className="flex flex-col gap-3">
           {[
-            { key: 'fixtures', label: 'Sincronizar todos os jogos', icon: ListOrdered, desc: 'Importa todos os fixtures da Copa para o banco.' },
+            { key: 'fixtures', label: 'Sincronizar jogos de hoje',  icon: ListOrdered, desc: 'Importa/atualiza somente os jogos de hoje no banco.' },
             { key: 'results',  label: 'Atualizar resultados',       icon: RefreshCw,   desc: 'Busca placares encerrados (ontem/hoje/amanhã).' },
             { key: 'live',     label: 'Encerrar jogos ao vivo',     icon: Zap,         desc: 'Finaliza jogos com FT/AET/PEN.' },
           ].map(({ key, label, icon: Icon, desc }) => (

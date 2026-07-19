@@ -9,8 +9,25 @@ export async function POST(req: Request) {
   }
 
   try {
-    const fixtures = await getFixtures()
+    const hoje   = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+    const amanha = new Date(Date.now() + 86400000).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+    const inicio = new Date(`${hoje}T03:00:00-03:00`).getTime()
+    const fim    = new Date(`${amanha}T03:00:00-03:00`).getTime()
+
+    const [fixturesHoje, fixturesAmanha] = await Promise.all([
+      getFixtures({ date: hoje }),
+      getFixtures({ date: amanha }),
+    ])
+    const fixtures = [...fixturesHoje, ...fixturesAmanha].filter((f) => {
+      const t = new Date(f.fixture.date).getTime()
+      return t >= inicio && t < fim
+    })
+
     const supabase = createServiceClient()
+
+    if (fixtures.length === 0) {
+      return NextResponse.json({ ok: true, synced: 0 })
+    }
 
     const rows = fixtures.map((f) => {
       const status = mapStatus(f.fixture.status.short)
