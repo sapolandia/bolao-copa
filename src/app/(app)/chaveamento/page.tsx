@@ -1,5 +1,6 @@
 import { ChaveamentoView } from './ChaveamentoView'
 import { getFixtures, mapStatus, placarFinal } from '@/lib/api-football'
+import { ordenarPorChaveamento } from '@/lib/bracket-order'
 
 const ROUNDS = [
   { key: 'Round of 32',     label: 'Round of 32' },
@@ -16,9 +17,10 @@ export default async function ChaveamentoPage() {
   const fixtures = await getFixtures()
 
   const bracket = ROUNDS.map(({ key, label }) => {
-    const jogos = fixtures
-      .filter((f) => f.league.round === key)
-      .sort((a, b) => new Date(a.fixture.date).getTime() - new Date(b.fixture.date).getTime())
+    const jogos = ordenarPorChaveamento(
+      fixtures.filter((f) => f.league.round === key),
+      key,
+    )
       .map((f) => {
         const status = mapStatus(f.fixture.status.short)
         const pf = placarFinal(f)
